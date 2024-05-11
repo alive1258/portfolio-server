@@ -33,17 +33,48 @@ async function run() {
       .collection("experiences");
     const blogCollection = client.db("portfolioDB").collection("blogs");
 
-    // projects
+    // get all projects
     app.get("/api/v1/projects", async (req, res) => {
       const result = await projectCollection.find().toArray();
       res.send(result);
     });
 
-    // Route to get a single product by its ID
+    // get a single projects by its ID
     app.get("/api/v1/projects/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await projectCollection.findOne(query);
+      res.send(result);
+    });
+
+    // update projects
+    app.put("/api/v1/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedProject = req.body;
+
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const project = {
+        $set: {
+          title: updatedProject.title,
+          quantity: updatedProject.quantity,
+          category: updatedProject.category,
+        },
+      };
+      const result = await projectCollection.updateOne(
+        filter,
+        project,
+        options
+      );
+
+      res.send(result);
+    });
+
+    //delete projects
+    app.delete("/api/v1/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await projectCollection.deleteOne(query);
       res.send(result);
     });
 
