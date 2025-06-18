@@ -55,29 +55,52 @@ async function run() {
 
     // update projects
     app.put("/api/v1/projects/:id", async (req, res) => {
-      const id = req.params.id;
-      const updatedProject = req.body;
+      try {
+        const id = req.params.id;
+        const updatedProject = req.body;
 
-      const filter = { _id: new ObjectId(id) };
-      const options = { upsert: true };
-      const project = {
-        $set: {
-          title: updatedProject.name,
-          tec1: updatedProject.tec1,
-          tec2: updatedProject.tec2,
-          tec3: updatedProject.tec3,
-          rating: updatedProject.rating,
-          review: updatedProject.review,
-          category: updatedProject.category,
-        },
-      };
-      const result = await projectCollection.updateOne(
-        filter,
-        project,
-        options
-      );
+        const options = { upsert: false };
 
-      res.send(result);
+        const project = {
+          $set: {
+            title: updatedProject.name,
+            image: updatedProject.image,
+            rating: updatedProject.rating,
+            review: updatedProject.review,
+            category: updatedProject.category,
+            live_link: updatedProject.live_link,
+            gitHub_link: updatedProject.gitHub_link,
+            gitHub_link_server: updatedProject.gitHub_link_server,
+            video_showcasing: updatedProject.video_showcasing,
+            tec1: updatedProject.tec1,
+            tec2: updatedProject.tec2,
+            tec3: updatedProject.tec3,
+            tec4: updatedProject.tec4,
+            tec5: updatedProject.tec5,
+            tec6: updatedProject.tec6,
+            tec7: updatedProject.tec7,
+            tec8: updatedProject.tec8,
+            Des1: updatedProject.Des1,
+            Des2: updatedProject.Des2,
+            Des3: updatedProject.Des3,
+            Des4: updatedProject.Des4,
+          },
+        };
+
+        const result = await projectCollection.updateOne(project, options);
+
+        res.send({
+          acknowledged: result.acknowledged,
+          modifiedCount: result.modifiedCount,
+          message:
+            result.modifiedCount > 0
+              ? "Project updated successfully."
+              : "No changes made.",
+        });
+      } catch (error) {
+        console.error("Error updating project:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     //delete projects
